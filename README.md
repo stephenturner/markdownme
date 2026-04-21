@@ -106,6 +106,7 @@ WEB_EXT_API_SECRET=your-jwt-secret
 Then build and sign:
 
 ```bash
+# Bump patch version in package.json first, e.g. 1.1.1
 pnpm build && \
    source .env && \
    web-ext sign --channel=unlisted \

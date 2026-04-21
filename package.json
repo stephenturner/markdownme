@@ -1,7 +1,7 @@
 {
   "name": "markdownme",
   "displayName": "markdownme",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Convert web page to markdown with one click",
   "author": "Stephen Turner",
   "scripts": {
