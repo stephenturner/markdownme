@@ -1,5 +1,5 @@
 import Markdown from "markdown-to-jsx"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { cleanMarkdown } from "~/lib/cleanMarkdown"
 import type { HeadingNode, PageData } from "~/lib/types"
@@ -70,25 +70,36 @@ export default function MarkdownPage() {
   const [pageData, setPageData] = useState<PageData | null>(null)
   const [hasAutoCopied, setHasAutoCopied] = useState(false)
   const [copiedIcon, setCopiedIcon] = useState<"markdown" | "prompt" | "download" | null>(null)
-  const [toggles, setToggles] = useState({
+  const defaultToggles = {
     removeImages: true,
     removeLinks: true,
     showMetadata: true,
     showSourceUrl: true,
     showPageMap: true
-  })
+  }
+  const [toggles, setToggles] = useState(defaultToggles)
+  const togglesLoaded = useRef(false)
 
   useEffect(() => {
-    chrome.storage.local.get(["pageData"], (result) => {
+    chrome.storage.local.get(["pageData", "toggles"], (result) => {
       if (chrome.runtime.lastError) {
         setError(chrome.runtime.lastError.message || "Failed to load")
-      } else if (result.pageData) {
-        setPageData(result.pageData)
       } else {
-        setError("No page data found. Please trigger the extension again.")
+        if (result.toggles) setToggles({ ...defaultToggles, ...result.toggles })
+        togglesLoaded.current = true
+        if (result.pageData) {
+          setPageData(result.pageData)
+        } else {
+          setError("No page data found. Please trigger the extension again.")
+        }
       }
     })
   }, [])
+
+  useEffect(() => {
+    if (!togglesLoaded.current) return
+    chrome.storage.local.set({ toggles })
+  }, [toggles])
 
   useEffect(() => {
     if (!pageData?.markdown) return

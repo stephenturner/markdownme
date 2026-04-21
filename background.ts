@@ -4,7 +4,7 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "convert-to-markdown",
     title: "markdownme",
-    contexts: ["page"]
+    contexts: ["page", "selection"]
   })
 })
 

@@ -8,29 +8,8 @@ import type { PageData } from "~/lib/types"
 export {}
 
 function convertPageToMarkdown() {
-  const documentClone = document.cloneNode(true) as Document
-
-  const badSelectors = [
-    ".infobox",
-    ".mw-editsection",
-    ".navbox",
-    ".metadata",
-    ".reflist",
-    ".reference",
-    ".mw-empty-elt"
-  ]
-  badSelectors.forEach((selector) => {
-    documentClone.querySelectorAll(selector).forEach((el) => el.remove())
-  })
-
-  let article: ReturnType<Readability["parse"]> = null
-  try {
-    if (isProbablyReaderable(documentClone)) {
-      article = new Readability(documentClone).parse()
-    }
-  } catch (error) {
-    console.warn("Readability failed to parse this page:", error)
-  }
+  const selection = window.getSelection()
+  const hasSelection = !!selection && !selection.isCollapsed && selection.rangeCount > 0
 
   const turndownService = new TurndownService({
     headingStyle: "atx",
@@ -57,7 +36,7 @@ function convertPageToMarkdown() {
   ])
 
   turndownService.addRule("ignoreBase64Images", {
-    filter: (node) => {
+    filter: (node: HTMLElement) => {
       if (node.nodeName === "IMG") {
         const src = (node as HTMLImageElement).getAttribute("src") || ""
         return src.startsWith("data:image")
@@ -68,18 +47,51 @@ function convertPageToMarkdown() {
   })
 
   let htmlToConvert = ""
-  if (article?.content) {
-    htmlToConvert = article.content
+  let article: ReturnType<Readability["parse"]> = null
+
+  if (hasSelection) {
+    const range = selection.getRangeAt(0)
+    const fragment = range.cloneContents()
+    const wrapper = document.createElement("div")
+    wrapper.appendChild(fragment)
+    htmlToConvert = wrapper.innerHTML
   } else {
-    const mainEl =
-      document.querySelector("main") ||
-      document.querySelector('[role="main"]') ||
-      document.querySelector("#main-content") ||
-      document.querySelector("#main") ||
-      document.querySelector("#content") ||
-      document.querySelector(".content") ||
-      document.body
-    htmlToConvert = mainEl.innerHTML
+    const documentClone = document.cloneNode(true) as Document
+
+    const badSelectors = [
+      ".infobox",
+      ".mw-editsection",
+      ".navbox",
+      ".metadata",
+      ".reflist",
+      ".reference",
+      ".mw-empty-elt"
+    ]
+    badSelectors.forEach((selector) => {
+      documentClone.querySelectorAll(selector).forEach((el) => el.remove())
+    })
+
+    try {
+      if (isProbablyReaderable(documentClone)) {
+        article = new Readability(documentClone).parse()
+      }
+    } catch (error) {
+      console.warn("Readability failed to parse this page:", error)
+    }
+
+    if (article?.content) {
+      htmlToConvert = article.content
+    } else {
+      const mainEl =
+        document.querySelector("main") ||
+        document.querySelector('[role="main"]') ||
+        document.querySelector("#main-content") ||
+        document.querySelector("#main") ||
+        document.querySelector("#content") ||
+        document.querySelector(".content") ||
+        document.body
+      htmlToConvert = mainEl.innerHTML
+    }
   }
 
   const pageData: PageData = {
