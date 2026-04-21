@@ -7,12 +7,12 @@ Turn any webpage into clean, LLM-ready Markdown in one click. Strip the browser,
 ## How it works
 
 1. Open any webpage
-2. Right-click and select "markdownme" (or press `Alt+M`)
+2. Click the markdownme toolbar button (or press `Alt+M`)
 3. Get clean Markdown instantly
 
 ## Features
 
-- **One-click conversion** via context menu or `Alt+M` keyboard shortcut
+- **One-click conversion** via toolbar button or `Alt+M` keyboard shortcut (configurable in Settings)
 - **Smart extraction** powered by Mozilla's Readability to isolate main content and ignore ads, navbars, and boilerplate
 - **Dedicated preview tab** with a live split-pane editor and rendered preview
 - **Toggles** to customize output: images, links, metadata (title/author/date), source URL, and a document structure map

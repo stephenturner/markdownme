@@ -43,7 +43,6 @@
   },
   "manifest": {
     "permissions": [
-      "contextMenus",
       "storage"
     ],
     "host_permissions": [
