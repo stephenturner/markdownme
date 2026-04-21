@@ -185,8 +185,8 @@ export default function MarkdownPage() {
   const tokenEstimate = Math.ceil(markdown.length / 4)
 
   return (
-    <div className="h-screen flex flex-col bg-zinc-950 text-zinc-100 overflow-hidden font-sans">
-      <header className="relative px-4 py-4 border-b border-zinc-800/60 bg-zinc-900/60 backdrop-blur-md flex flex-wrap gap-3 items-center justify-between z-10 shrink-0 shadow-sm">
+    <div className="h-screen flex flex-col bg-white text-zinc-900 overflow-hidden font-sans">
+      <header className="relative px-4 py-4 border-b border-zinc-200/60 bg-white/80 backdrop-blur-md flex flex-wrap gap-3 items-center justify-between z-10 shrink-0 shadow-sm">
         <div className="flex items-center gap-2 relative z-10">
           <button
             onClick={handleCopy}
@@ -200,9 +200,9 @@ export default function MarkdownPage() {
           </button>
           <button
             onClick={handleCopyPrompt}
-            className="group inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 transition-all duration-200 active:scale-[0.98] outline-none">
+            className="group inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-700 transition-all duration-200 active:scale-[0.98] outline-none">
             {copiedIcon === "prompt" ? (
-              <CheckIcon className="w-4 h-4 text-emerald-400" />
+              <CheckIcon className="w-4 h-4 text-emerald-600" />
             ) : (
               <CopyIcon className="w-4 h-4 opacity-70 group-hover:opacity-100" />
             )}
@@ -210,9 +210,9 @@ export default function MarkdownPage() {
           </button>
           <button
             onClick={handleDownload}
-            className="group inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 transition-all duration-200 active:scale-[0.98] outline-none">
+            className="group inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-700 transition-all duration-200 active:scale-[0.98] outline-none">
             {copiedIcon === "download" ? (
-              <CheckIcon className="w-4 h-4 text-emerald-400" />
+              <CheckIcon className="w-4 h-4 text-emerald-600" />
             ) : (
               <DownloadIcon className="w-4 h-4 opacity-90 group-hover:opacity-100" />
             )}
@@ -222,7 +222,7 @@ export default function MarkdownPage() {
 
         {pageData && (
           <div className="hidden lg:flex flex-col items-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-            <div className="flex items-center p-1 bg-zinc-950/60 border border-zinc-800/40 backdrop-blur-xl shadow-lg rounded-full">
+            <div className="flex items-center p-1 bg-white border border-zinc-200 backdrop-blur-xl shadow-sm rounded-full">
               {(
                 [
                   { key: "removeImages", icon: ImageIcon, label: "Images", active: !toggles.removeImages },
@@ -239,7 +239,7 @@ export default function MarkdownPage() {
                     ${i === 0 ? "rounded-l-xl" : ""}
                     ${i === arr.length - 1 ? "rounded-r-xl" : ""}
                     ${i > 0 ? "border-l border-zinc-800/40" : ""}
-                    ${active ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900/40"}`}>
+                    ${active ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50"}`}>
                   <Icon className="w-3.5 h-3.5 opacity-80 group-hover:opacity-100" />
                   {label}
                 </button>
@@ -250,26 +250,26 @@ export default function MarkdownPage() {
 
         <div className="flex items-center gap-3 text-xs text-zinc-500 relative z-10">
           {status ? (
-            <div className="text-emerald-400 font-medium">{status}</div>
+            <div className="text-emerald-600 font-medium">{status}</div>
           ) : (
-            <div className="flex items-center gap-1.5 text-zinc-400" title="Rough GPT token estimate">
+            <div className="flex items-center gap-1.5 text-zinc-500" title="Rough GPT token estimate">
               ~{tokenEstimate.toLocaleString()} tokens
             </div>
           )}
-          <div className="hidden sm:block w-px h-3 bg-zinc-700/50" />
+          <div className="hidden sm:block w-px h-3 bg-zinc-300" />
           <div className="hidden sm:block">{markdown.length.toLocaleString()} chars</div>
         </div>
       </header>
 
       {error && (
-        <div className="px-4 py-2 text-sm text-red-400 bg-red-950/40 border-b border-red-900/40 shrink-0">
+        <div className="px-4 py-2 text-sm text-red-600 bg-red-50 border-b border-red-200 shrink-0">
           {error}
         </div>
       )}
 
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 p-3 min-h-0 bg-zinc-950">
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 flex flex-col overflow-hidden hover:border-zinc-700/80 transition-colors shadow-sm">
-          <div className="px-3 py-2 text-xs font-medium text-zinc-400 border-b border-zinc-800/80 bg-zinc-900/40 flex justify-between items-center">
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 p-3 min-h-0 bg-zinc-50">
+        <div className="rounded-xl border border-zinc-200 bg-white flex flex-col overflow-hidden hover:border-zinc-300 transition-colors shadow-sm">
+          <div className="px-3 py-2 text-xs font-medium text-zinc-500 border-b border-zinc-200 bg-zinc-50 flex justify-between items-center">
             <span>Markdown</span>
             <div className="flex items-center gap-3">
               <button
@@ -279,7 +279,7 @@ export default function MarkdownPage() {
                     .then((text) => setMarkdown(text + "\n\n" + markdown))
                     .catch(() => {})
                 }
-                className="hover:text-zinc-200 transition-colors flex items-center gap-1.5 group">
+                className="hover:text-zinc-700 transition-colors flex items-center gap-1.5 group">
                 <PasteIcon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
                 <span className="hidden xl:inline">Paste</span>
               </button>
@@ -295,17 +295,17 @@ export default function MarkdownPage() {
             value={markdown}
             spellCheck={false}
             onChange={(e) => setMarkdown(e.target.value)}
-            className="flex-1 w-full p-4 md:p-5 bg-transparent outline-none text-[13px] font-mono text-zinc-300 leading-relaxed resize-none selection:bg-emerald-500/30 placeholder-zinc-700 overflow-y-auto"
+            className="flex-1 w-full p-4 md:p-5 bg-transparent outline-none text-[13px] font-mono text-zinc-800 leading-relaxed resize-none selection:bg-emerald-500/30 placeholder:text-zinc-300 overflow-y-auto"
             placeholder="Paste or write markdown here..."
           />
         </div>
 
-        <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/20 flex flex-col overflow-hidden hover:border-zinc-700/80 transition-colors shadow-sm">
-          <div className="px-3 py-2.5 text-xs font-medium text-zinc-400 border-b border-zinc-800/80 bg-zinc-900/40">
+        <div className="rounded-xl border border-zinc-200 bg-white flex flex-col overflow-hidden hover:border-zinc-300 transition-colors shadow-sm">
+          <div className="px-3 py-2.5 text-xs font-medium text-zinc-500 border-b border-zinc-200 bg-zinc-50">
             Live Preview
           </div>
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6">
-            <article className="prose prose-invert prose-sm max-w-none prose-headings:text-zinc-200 prose-headings:font-medium prose-headings:tracking-tight prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:text-zinc-400 prose-a:text-emerald-400 prose-a:no-underline hover:prose-a:underline prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-800 prose-strong:text-zinc-200 prose-code:rounded prose-li:text-zinc-400 prose-ul:marker:text-zinc-600 prose-ol:marker:text-zinc-600 prose-blockquote:border-l-zinc-700 prose-blockquote:text-zinc-400 prose-blockquote:font-normal prose-blockquote:not-italic prose-hr:border-zinc-800 prose-pre:leading-none prose-p:my-0 prose-hr:my-4">
+            <article className="prose prose-sm max-w-none prose-headings:text-zinc-900 prose-headings:font-medium prose-headings:tracking-tight prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:text-zinc-700 prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:underline prose-pre:bg-zinc-50 prose-pre:border prose-pre:border-zinc-200 prose-strong:text-zinc-900 prose-code:rounded prose-li:text-zinc-700 prose-ul:marker:text-zinc-400 prose-ol:marker:text-zinc-400 prose-blockquote:border-l-zinc-300 prose-blockquote:text-zinc-500 prose-blockquote:font-normal prose-blockquote:not-italic prose-hr:border-zinc-200 prose-pre:leading-none prose-p:my-0 prose-hr:my-4">
               <Markdown>{markdown}</Markdown>
             </article>
           </div>

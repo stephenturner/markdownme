@@ -7,12 +7,12 @@ Turn any webpage into clean, LLM-ready Markdown in one click. Strip the browser,
 ## How it works
 
 1. Open any webpage
-2. Right-click and select "markdownme" (or press `Alt+M`)
+2. Click the markdownme toolbar button (or press `Alt+M`)
 3. Get clean Markdown instantly
 
 ## Features
 
-- **One-click conversion** via context menu or `Alt+M` keyboard shortcut
+- **One-click conversion** via toolbar button or `Alt+M` keyboard shortcut (configurable in Settings)
 - **Smart extraction** powered by Mozilla's Readability to isolate main content and ignore ads, navbars, and boilerplate
 - **Dedicated preview tab** with a live split-pane editor and rendered preview
 - **Toggles** to customize output: images, links, metadata (title/author/date), source URL, and a document structure map
@@ -25,6 +25,13 @@ HTML pages carry navigation bars, scripts, ads, and deeply nested DOM structures
 ## Installation
 
 The extension is available on [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/markdownme/).
+
+Or install directly from the [GitHub releases page](https://github.com/stephenturner/markdownme/releases):
+
+1. Download the `.xpi` file from the latest release
+2. Open Firefox and go to `about:addons`
+3. Click the gear icon and select **Install Add-on From File...**
+4. Select the downloaded `.xpi` file and confirm the installation
 
 Or build it yourself from source (see below).
 
@@ -86,6 +93,29 @@ This produces two things in `build/firefox-mv3-prod/`:
 
 - A folder with the unpacked extension
 - A `.zip` file ready for upload to Firefox Add-ons
+
+### Local install (signed, permanent)
+
+To install permanently without waiting for AMO review, sign for self-distribution using `web-ext`. Get API credentials from `addons.mozilla.org/developers/addon/api/key/`, then add them to `.env` (already gitignored):
+
+```
+WEB_EXT_API_KEY=your-jwt-issuer
+WEB_EXT_API_SECRET=your-jwt-secret
+```
+
+Then build and sign:
+
+```bash
+# Bump patch version in package.json first, e.g. 1.1.1
+pnpm build && \
+   source .env && \
+   web-ext sign --channel=unlisted \
+  --source-dir=build/firefox-mv3-prod \
+  --api-key=$WEB_EXT_API_KEY \
+  --api-secret=$WEB_EXT_API_SECRET
+```
+
+The signed `.xpi` lands in `web-ext-artifacts/`. Open it in Firefox to install permanently. This doesn't conflict with a listed submission that's under review.
 
 ### Submitting to Firefox Add-ons (AMO)
 

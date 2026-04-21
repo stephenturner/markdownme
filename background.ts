@@ -1,15 +1,7 @@
 export {}
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    id: "convert-to-markdown",
-    title: "markdownme",
-    contexts: ["page", "selection"]
-  })
-})
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "convert-to-markdown" && tab?.id) {
+chrome.action.onClicked.addListener((tab) => {
+  if (tab?.id) {
     chrome.tabs
       .sendMessage(tab.id, { action: "convert-to-markdown" })
       .catch((err) =>
@@ -36,10 +28,8 @@ chrome.commands.onCommand.addListener((command, tab) => {
   }
 })
 
-// Listen for messages from the content script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   if (request.action === "open-markdown-tab") {
-    // Open the new tab page provided by Plasmo
     chrome.tabs.create({ url: chrome.runtime.getURL("tabs/markdown.html") })
   }
 })
