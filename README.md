@@ -26,6 +26,13 @@ HTML pages carry navigation bars, scripts, ads, and deeply nested DOM structures
 
 The extension is available on [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/markdownme/).
 
+Or install directly from the [GitHub releases page](https://github.com/stephenturner/markdownme/releases):
+
+1. Download the `.xpi` file from the latest release
+2. Open Firefox and go to `about:addons`
+3. Click the gear icon and select **Install Add-on From File...**
+4. Select the downloaded `.xpi` file and confirm the installation
+
 Or build it yourself from source (see below).
 
 ## Building from source
