@@ -87,6 +87,27 @@ This produces two things in `build/firefox-mv3-prod/`:
 - A folder with the unpacked extension
 - A `.zip` file ready for upload to Firefox Add-ons
 
+### Local install (signed, permanent)
+
+To install permanently without waiting for AMO review, sign for self-distribution using `web-ext`. Get API credentials from `addons.mozilla.org/developers/addon/api/key/`, then add them to `.env` (already gitignored):
+
+```
+WEB_EXT_API_KEY=your-jwt-issuer
+WEB_EXT_API_SECRET=your-jwt-secret
+```
+
+Then build and sign:
+
+```bash
+pnpm build
+source .env && web-ext sign --channel=unlisted \
+  --source-dir=build/firefox-mv3-prod \
+  --api-key=$WEB_EXT_API_KEY \
+  --api-secret=$WEB_EXT_API_SECRET
+```
+
+The signed `.xpi` lands in `web-ext-artifacts/`. Open it in Firefox to install permanently. This doesn't conflict with a listed submission that's under review.
+
 ### Submitting to Firefox Add-ons (AMO)
 
 1. Run `pnpm build` to generate the zip
