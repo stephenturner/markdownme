@@ -99,8 +99,9 @@ WEB_EXT_API_SECRET=your-jwt-secret
 Then build and sign:
 
 ```bash
-pnpm build
-source .env && web-ext sign --channel=unlisted \
+pnpm build && \
+   source .env && \
+   web-ext sign --channel=unlisted \
   --source-dir=build/firefox-mv3-prod \
   --api-key=$WEB_EXT_API_KEY \
   --api-secret=$WEB_EXT_API_SECRET
