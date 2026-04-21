@@ -18,8 +18,6 @@ Turn any webpage into clean, LLM-ready Markdown in one click. Strip the browser,
 - **Toggles** to customize output: images, links, metadata (title/author/date), source URL, and a document structure map
 - **Export options:** copy to clipboard, download as `.md`, or copy wrapped as a code block for AI prompts
 
-## Why Markdown for LLMs
-
 HTML pages carry navigation bars, scripts, ads, and deeply nested DOM structures that consume context window without adding meaning. Clean Markdown removes the noise, preserves headings and structure, and fits more useful content into limited context windows.
 
 ## Installation
@@ -148,4 +146,4 @@ MIT
 
 ## Credits
 
-Originally created by [Adem Kouki](https://github.com/Ademking).
+Modified from [MD-This-Page](https://github.com/Ademking/MD-This-Page) by [Adem Kouki](https://github.com/Ademking).
