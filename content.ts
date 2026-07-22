@@ -102,7 +102,7 @@ function convertPageToMarkdown() {
     url: window.location.href
   }
 
-  chrome.storage.local.set({ pageData }, () => {
+  chrome.storage.local.set({ pageData, pdfRequest: null }, () => {
     if (chrome.runtime.lastError) {
       console.error("Failed to save page data:", chrome.runtime.lastError)
       return

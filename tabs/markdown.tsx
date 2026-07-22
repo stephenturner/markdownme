@@ -2,6 +2,7 @@ import Markdown from "markdown-to-jsx"
 import { useEffect, useRef, useState } from "react"
 
 import { cleanMarkdown } from "~/lib/cleanMarkdown"
+import { convertPdf, fetchPdfBytes, pdfTitleFromUrl, type PdfRequest } from "~/lib/pdf"
 import type { HeadingNode, PageData } from "~/lib/types"
 
 import {
@@ -67,6 +68,7 @@ export default function MarkdownPage() {
   const [markdown, setMarkdown] = useState("")
   const [status, setStatus] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const [pageData, setPageData] = useState<PageData | null>(null)
   const [hasAutoCopied, setHasAutoCopied] = useState(false)
   const [copiedIcon, setCopiedIcon] = useState<"markdown" | "prompt" | "download" | null>(null)
@@ -80,18 +82,39 @@ export default function MarkdownPage() {
   const [toggles, setToggles] = useState(defaultToggles)
   const togglesLoaded = useRef(false)
 
+  const convertPdfRequest = async (req: PdfRequest) => {
+    setLoading(true)
+    try {
+      const bytes = await fetchPdfBytes(req.url)
+      const md = await convertPdf(bytes)
+      setPageData({
+        markdown: cleanMarkdown(md),
+        title: pdfTitleFromUrl(req.url) || req.title || "PDF",
+        author: "",
+        date: "",
+        url: req.url
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't convert this PDF.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    chrome.storage.local.get(["pageData", "toggles"], (result) => {
+    chrome.storage.local.get(["pageData", "pdfRequest", "toggles"], (result) => {
       if (chrome.runtime.lastError) {
         setError(chrome.runtime.lastError.message || "Failed to load")
+        return
+      }
+      if (result.toggles) setToggles({ ...defaultToggles, ...result.toggles })
+      togglesLoaded.current = true
+      if (result.pdfRequest?.url) {
+        convertPdfRequest(result.pdfRequest)
+      } else if (result.pageData) {
+        setPageData(result.pageData)
       } else {
-        if (result.toggles) setToggles({ ...defaultToggles, ...result.toggles })
-        togglesLoaded.current = true
-        if (result.pageData) {
-          setPageData(result.pageData)
-        } else {
-          setError("No page data found. Please trigger the extension again.")
-        }
+        setError("No page data found. Please trigger the extension again.")
       }
     })
   }, [])
@@ -260,6 +283,13 @@ export default function MarkdownPage() {
           <div className="hidden sm:block">{markdown.length.toLocaleString()} chars</div>
         </div>
       </header>
+
+      {loading && (
+        <div className="px-4 py-2 text-sm text-emerald-700 bg-emerald-50 border-b border-emerald-200 shrink-0 flex items-center gap-2">
+          <span className="inline-block w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+          Converting PDF…
+        </div>
+      )}
 
       {error && (
         <div className="px-4 py-2 text-sm text-red-600 bg-red-50 border-b border-red-200 shrink-0">
