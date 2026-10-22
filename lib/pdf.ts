@@ -3,6 +3,19 @@ export interface PdfRequest {
   title: string
 }
 
+// Firefox never lets extensions fetch file:// URLs (there is no per-add-on
+// "allow file access" switch like Chrome's), so local PDFs have to come in
+// through a file picker or drag and drop instead.
+export function isLocalFileUrl(url: string): boolean {
+  return /^file:/i.test(url)
+}
+
+export function checkPdfBytes(bytes: Uint8Array): Uint8Array {
+  const magic = String.fromCharCode(...bytes.slice(0, 5))
+  if (magic !== "%PDF-") throw new Error("That file isn't a PDF.")
+  return bytes
+}
+
 // Fetch a PDF and confirm it really is one before handing it to the converter.
 // Extension pages get cross-origin fetch via the manifest host_permissions; a
 // remote server still has to allow the request (CORS) for it to succeed.
@@ -12,15 +25,12 @@ export async function fetchPdfBytes(url: string): Promise<Uint8Array> {
     res = await fetch(url)
   } catch {
     throw new Error(
-      "Couldn't fetch the file. The server may block cross-origin requests (CORS), or file access isn't enabled for the extension."
+      "Couldn't fetch the file. The server may block cross-origin requests (CORS)."
     )
   }
   if (!res.ok) throw new Error(`The server returned ${res.status}.`)
 
-  const bytes = new Uint8Array(await res.arrayBuffer())
-  const magic = String.fromCharCode(...bytes.slice(0, 5))
-  if (magic !== "%PDF-") throw new Error("That file isn't a PDF.")
-  return bytes
+  return checkPdfBytes(new Uint8Array(await res.arrayBuffer()))
 }
 
 export function pdfTitleFromUrl(url: string): string {

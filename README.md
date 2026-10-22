@@ -13,7 +13,7 @@ Turn any webpage or PDF into clean, LLM-ready Markdown in one click. Strip the b
 ## Features
 
 - **One-click conversion** via toolbar button or `Alt+M` keyboard shortcut (configurable in Settings)
-- **Works on PDFs too:** trigger the extension while viewing any PDF (a remote `https://…/paper.pdf` or a local `file://…/report.pdf`) and it converts to Markdown, using [pdf2md](https://github.com/opendocsg/pdf2md) entirely in the browser
+- **Works on PDFs too:** trigger the extension while viewing any PDF (a remote `https://…/paper.pdf` or a local `file://…/report.pdf`, which you pick once in the preview tab because Firefox blocks extensions from reading local files) and it converts to Markdown, using [pdf2md](https://github.com/opendocsg/pdf2md) entirely in the browser
 - **Smart extraction** powered by Mozilla's Readability to isolate main content and ignore ads, navbars, and boilerplate
 - **Dedicated preview tab** with a live split-pane editor and rendered preview
 - **Toggles** to customize output: images, links, metadata (title/author/date), source URL, and a document structure map

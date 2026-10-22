@@ -35,7 +35,7 @@ This is a Firefox MV3 browser extension built with [Plasmo](https://plasmo.com/)
 **Shared code in `lib/`:**
 - `types.ts` — `PageData` and `HeadingNode` interfaces shared between content and tab
 - `cleanMarkdown.ts` — post-processing to remove blank bullets, collapse blank lines, and trim
-- `pdf.ts` — PDF path used by the tab: `fetchPdfBytes` (fetch + `%PDF-` magic-byte check), `pdfTitleFromUrl`, and `convertPdf`. The extension's `host_permissions` (`https://`, `http://`, `file:///`) give the tab page cross-origin fetch; a remote server still has to allow CORS, and local files need file access enabled for the add-on.
+- `pdf.ts` — PDF path used by the tab: `fetchPdfBytes` (fetch + `%PDF-` magic-byte check via `checkPdfBytes`), `isLocalFileUrl`, `pdfTitleFromUrl`, and `convertPdf`. The extension's `host_permissions` give the tab page cross-origin fetch for `http(s)`; a remote server still has to allow CORS. Firefox never lets extensions fetch `file://` URLs (no per-add-on file access setting exists, unlike Chrome), so for a `file://` `pdfRequest` the tab skips the fetch and shows a "Choose file" prompt that also accepts drag and drop, then reads the picked `File` directly.
 
 **PDF conversion bundle (`vendor/pdf2md.js`):** a prebuilt browser bundle of [`@opendocsg/pdf2md`](https://github.com/opendocsg/pdf2md) (pdf.js via unpdf, no separate worker file), **checked in deliberately**. It is built as an esbuild **IIFE** that assigns a `window.pdf2mdBundle` global (`pdf2mdBundle.default` is the convert function). `lib/pdf.ts` loads it by injecting a `<script src={chrome.runtime.getURL("vendor/pdf2md.js")}>` tag into the tab and then reads the global — no parcel involvement at all.
 
