@@ -2,7 +2,14 @@ import Markdown from "markdown-to-jsx"
 import { useEffect, useRef, useState } from "react"
 
 import { cleanMarkdown } from "~/lib/cleanMarkdown"
-import { convertPdf, fetchPdfBytes, pdfTitleFromUrl, type PdfRequest } from "~/lib/pdf"
+import {
+  checkPdfBytes,
+  convertPdf,
+  fetchPdfBytes,
+  isLocalFileUrl,
+  pdfTitleFromUrl,
+  type PdfRequest
+} from "~/lib/pdf"
 import type { HeadingNode, PageData } from "~/lib/types"
 
 import {
@@ -81,19 +88,24 @@ export default function MarkdownPage() {
   }
   const [toggles, setToggles] = useState(defaultToggles)
   const togglesLoaded = useRef(false)
+  // A file:// PDF waiting for the user to pick it (Firefox won't let us fetch it).
+  const [localPdf, setLocalPdf] = useState<PdfRequest | null>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
 
-  const convertPdfRequest = async (req: PdfRequest) => {
+  const convertPdfRequest = async (req: PdfRequest, loadBytes: () => Promise<Uint8Array>) => {
     setLoading(true)
+    setError("")
     try {
-      const bytes = await fetchPdfBytes(req.url)
+      const bytes = await loadBytes()
       const md = await convertPdf(bytes)
       setPageData({
         markdown: cleanMarkdown(md),
-        title: pdfTitleFromUrl(req.url) || req.title || "PDF",
+        title: (req.url && pdfTitleFromUrl(req.url)) || req.title || "PDF",
         author: "",
         date: "",
         url: req.url
       })
+      setLocalPdf(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't convert this PDF.")
     } finally {
@@ -109,8 +121,10 @@ export default function MarkdownPage() {
       }
       if (result.toggles) setToggles({ ...defaultToggles, ...result.toggles })
       togglesLoaded.current = true
-      if (result.pdfRequest?.url) {
-        convertPdfRequest(result.pdfRequest)
+      if (result.pdfRequest?.url && isLocalFileUrl(result.pdfRequest.url)) {
+        setLocalPdf(result.pdfRequest)
+      } else if (result.pdfRequest?.url) {
+        convertPdfRequest(result.pdfRequest, () => fetchPdfBytes(result.pdfRequest.url))
       } else if (result.pageData) {
         setPageData(result.pageData)
       } else {
@@ -118,6 +132,30 @@ export default function MarkdownPage() {
       }
     })
   }, [])
+
+  const convertLocalFile = (file?: File) => {
+    if (!file || !localPdf) return
+    // Keep the viewer's file:// URL as the source only if the user picked that
+    // same file; a picked file has no path we can see, so otherwise leave it blank.
+    const name = file.name.replace(/\.pdf$/i, "")
+    const req = name === pdfTitleFromUrl(localPdf.url) ? localPdf : { url: "", title: name }
+    convertPdfRequest(req, async () => checkPdfBytes(new Uint8Array(await file.arrayBuffer())))
+  }
+
+  useEffect(() => {
+    if (!localPdf) return
+    const onDragOver = (e: DragEvent) => e.preventDefault()
+    const onDrop = (e: DragEvent) => {
+      e.preventDefault()
+      convertLocalFile(e.dataTransfer?.files[0])
+    }
+    window.addEventListener("dragover", onDragOver)
+    window.addEventListener("drop", onDrop)
+    return () => {
+      window.removeEventListener("dragover", onDragOver)
+      window.removeEventListener("drop", onDrop)
+    }
+  }, [localPdf])
 
   useEffect(() => {
     if (!togglesLoaded.current) return
@@ -288,6 +326,27 @@ export default function MarkdownPage() {
         <div className="px-4 py-2 text-sm text-emerald-700 bg-emerald-50 border-b border-emerald-200 shrink-0 flex items-center gap-2">
           <span className="inline-block w-3.5 h-3.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
           Converting PDF…
+        </div>
+      )}
+
+      {localPdf && !loading && (
+        <div className="px-4 py-2 text-sm text-zinc-700 bg-amber-50 border-b border-amber-200 shrink-0 flex items-center gap-3">
+          <span>
+            Firefox doesn't let extensions read files from disk. Choose{" "}
+            <span className="font-medium">{pdfTitleFromUrl(localPdf.url)}.pdf</span> (or drop it here) to convert it.
+          </span>
+          <button
+            onClick={() => fileInput.current?.click()}
+            className="px-2.5 py-1 rounded-md bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 transition-colors">
+            Choose file
+          </button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".pdf,application/pdf"
+            className="hidden"
+            onChange={(e) => convertLocalFile(e.target.files?.[0])}
+          />
         </div>
       )}
 

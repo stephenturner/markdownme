@@ -4,6 +4,12 @@ All notable changes to markdownme are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2026-10-22
+
+### Fixed
+
+- Local `file://` PDFs failed with a fetch error because Firefox never lets extensions read local files, and it has no setting to allow it. The preview tab now asks you to choose the file (or drop it on the page) and converts it from there.
+
 ## [1.3.1] - 2026-07-22
 
 ### Added
