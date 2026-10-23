@@ -111,8 +111,11 @@ function convertPageToMarkdown() {
   })
 }
 
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === "convert-to-markdown") {
+    // Reply so the background script knows we handled it; with no response
+    // Firefox can reject the sendMessage and trigger the PDF fallback.
+    sendResponse({ ok: true })
     convertPageToMarkdown()
   }
 })

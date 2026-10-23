@@ -52,7 +52,13 @@ To refresh the bundle: rebuild the ESM bundle in [pdfdown](https://github.com/st
 
 Plasmo reads the `manifest` field in `package.json` and merges it into the generated `manifest.json`. The `version` field in `package.json` is the extension version — Firefox Add-ons requires it to increment monotonically.
 
-For AMO submission, generate the source zip with:
+For AMO submission, generate the source zip from an allowlist of the files needed to build:
 ```bash
-zip -r markdownme-source.zip . --exclude "node_modules/*" --exclude "build/*" --exclude ".git/*"
+zip -r -X markdownme-source.zip \
+  background.ts content.ts options.tsx tabs lib vendor assets \
+  package.json pnpm-lock.yaml tsconfig.json tailwind.config.js postcss.config.js \
+  .prettierrc.mjs turndown-plugin-gfm.d.ts README.md LICENSE CHANGELOG.md CLAUDE.md \
+  -x "*.DS_Store"
 ```
+
+Don't switch to a `zip -r . --exclude …` approach. It sweeps in Parcel's `.plasmo/` cache (~280 MB, over AMO's 200 MB upload limit), `web-ext-artifacts/`, the previous source zip, and `.env` (the AMO API key and secret). If a new file becomes part of the build, add it to the list here and in `README.md`.

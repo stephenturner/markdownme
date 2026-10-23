@@ -12,12 +12,14 @@ function isFetchable(url?: string): boolean {
   return !!url && /^(https?|file):/i.test(url)
 }
 
-function convertPdfTab(tab: chrome.tabs.Tab) {
+// `guessed` marks a tab we only suspect is a PDF (no content script answered),
+// so the markdown tab can explain a failure instead of blaming CORS.
+function convertPdfTab(tab: chrome.tabs.Tab, guessed = false) {
   // PDFs never run our content script (Firefox renders them in its own viewer),
   // so hand the URL to the markdown tab, which fetches, verifies, and converts.
   chrome.storage.local.set(
     {
-      pdfRequest: { url: tab.url, title: tab.title || "" },
+      pdfRequest: { url: tab.url, title: tab.title || "", guessed },
       pageData: null
     },
     () => {
@@ -40,7 +42,7 @@ function trigger(tab?: chrome.tabs.Tab) {
     // no .pdf in the URL), so try the PDF path — the tab magic-byte-checks it
     // and shows a clear error if it turns out not to be a PDF.
     if (isFetchable(tab.url)) {
-      convertPdfTab(tab)
+      convertPdfTab(tab, true)
     } else {
       console.log("No content script and page isn't fetchable:", tab.url)
     }

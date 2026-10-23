@@ -107,7 +107,13 @@ export default function MarkdownPage() {
       })
       setLocalPdf(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't convert this PDF.")
+      if (req.guessed) {
+        setError(
+          "markdownme couldn't read this page. Reload the page and try again (pages opened before the add-on was loaded don't have it yet)."
+        )
+      } else {
+        setError(err instanceof Error ? err.message : "Couldn't convert this PDF.")
+      }
     } finally {
       setLoading(false)
     }

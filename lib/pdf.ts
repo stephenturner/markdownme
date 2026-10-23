@@ -1,6 +1,7 @@
 export interface PdfRequest {
   url: string
   title: string
+  guessed?: boolean
 }
 
 // Firefox never lets extensions fetch file:// URLs (there is no per-add-on

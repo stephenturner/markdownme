@@ -4,6 +4,13 @@ All notable changes to markdownme are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2026-10-23
+
+### Fixed
+
+- Converting an ordinary web page could fail with "Couldn't fetch the file. The server may block cross-origin requests (CORS)." The page's script never confirmed it had received the request, so the extension wrongly assumed the tab was a PDF and tried to download it. Pages now convert normally again.
+- When the extension can't reach a page at all (usually a tab that was open before the add-on was loaded), the preview tab now tells you to reload the page instead of showing a misleading CORS error.
+
 ## [1.3.2] - 2026-10-22
 
 ### Fixed
